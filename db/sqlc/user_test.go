@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/francivaldo-alves/go-finance/util"
+	"github.com/francivaldo-alves/gofinance-bankend/util"
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/require"
 )
