@@ -21,21 +21,23 @@ func (server *Server) createCategory(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+	} else {
+
+		arg := db.CreateCategoryParams{
+			UserID:      req.UserID,
+			Title:       req.Title,
+			Type:        req.Type,
+			Description: req.Description,
+		}
+
+		category, err := server.store.CreateCategory(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		}
+
+		ctx.JSON(http.StatusOK, category)
 	}
 
-	arg := db.CreateCategoryParams{
-		UserID:      req.UserID,
-		Title:       req.Title,
-		Type:        req.Type,
-		Description: req.Description,
-	}
-
-	category, err := server.store.CreateCategory(ctx, arg)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-	}
-
-	ctx.JSON(http.StatusOK, category)
 }
 
 // Funcação da PI para buscar uma category

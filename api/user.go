@@ -1,17 +1,20 @@
 package api
 
 import (
+	"bytes"
+	"crypto/sha512"
 	"database/sql"
 	"net/http"
 
 	db "github.com/francivaldo-alves/gofinance-bankend/db/sqlc"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type createUserRequest struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
-	Email    string `json:"email" binding:"required, email"`
+	Email    string `json:"email" binding:"required"`
 }
 
 // Funcação da PI para cadastar um usuario
@@ -21,9 +24,20 @@ func (server *Server) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 
 	}
+
+	//HASHED
+	hasedUInput := sha512.Sum512_256([]byte(req.Password))
+	trimmedHash := bytes.Trim(hasedUInput[:], "\x00")
+	preparedPassword := string(trimmedHash)
+	passwordHashInBytes, err := bcrypt.GenerateFromPassword([]byte(preparedPassword), bcrypt.DefaultCost)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+	}
+	var passwordHashed = string(passwordHashInBytes)
+
 	arg := db.CreateUserParams{
 		Username: req.Username,
-		Password: req.Password,
+		Password: passwordHashed,
 		Email:    req.Email,
 	}
 	user, err := server.store.CreateUser(ctx, arg)

@@ -26,20 +26,34 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 
 	}
-	arg := db.CreateAccountParams{
-		UserID:      req.UserID,
-		CategoryID:  req.CategoryID,
-		Title:       req.Title,
-		Type:        req.Type,
-		Description: req.Description,
-		Value:       req.Value,
-		Date:        req.Date,
-	}
-	account, err := server.store.CreateAccount(ctx, arg)
+	var categoryId = req.CategoryID
+	var accountType = req.Type
+	category, err := server.store.GetCategory(ctx, categoryId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 	}
-	ctx.JSON(http.StatusOK, account)
+
+	var categoryTypeIsDiffentOdAccountType = category.Type != accountType
+	if categoryTypeIsDiffentOdAccountType {
+		ctx.JSON(http.StatusBadRequest, "Account type is diferente od Category type")
+	} else {
+
+		arg := db.CreateAccountParams{
+			UserID:      req.UserID,
+			CategoryID:  categoryId,
+			Title:       req.Title,
+			Type:        accountType,
+			Description: req.Description,
+			Value:       req.Value,
+			Date:        req.Date,
+		}
+		account, err := server.store.CreateAccount(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		}
+		ctx.JSON(http.StatusOK, account)
+	}
+
 }
 
 // Funcação da PI para buscar uma account
