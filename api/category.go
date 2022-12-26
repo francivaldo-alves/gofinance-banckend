@@ -76,22 +76,24 @@ type getCategoriesRequest struct {
 // Funcação da PI para buscar uma category
 func (server *Server) getCategories(ctx *gin.Context) {
 	var req getCategoriesRequest
-	err := ctx.ShouldBindUri(&req)
+	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
 	}
+
 	arg := db.GetCategoriesParams{
 		UserID:      req.UserID,
-		Title:       req.Title,
 		Type:        req.Type,
+		Title:       req.Title,
 		Description: req.Description,
 	}
 
 	categories, err := server.store.GetCategories(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
 	}
+
 	ctx.JSON(http.StatusOK, categories)
 }
 

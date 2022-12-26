@@ -12,7 +12,15 @@ INSERT INTO categories (
 SELECT * FROM categories WHERE id =$1 LIMIT 1;
 
 -- name: GetCategories :many
-SELECT * FROM categories WHERE user_id =$1 AND type =$2 AND title Like $3 AND description Like $4;
+SELECT * FROM categories
+  WHERE  
+    user_id= $1
+  AND
+   type = $2
+ AND 
+   title LIKE CONCAT('%', @title::text, '%')  
+ AND 
+   description LIKE CONCAT('%', @description::text, '%');
 
 -- name: GetCategoriesByUserIdAndType :many
 SELECT * FROM categories WHERE user_id =$1 AND type =$2;
