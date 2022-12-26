@@ -241,7 +241,7 @@ func (server *Server) getAccounts(ctx *gin.Context) {
 			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 			return
 		}
-		accounts = accountsFilterAsParameters
+		accounts = accountsByUserIdAndTitle
 	}
 
 	ctx.JSON(http.StatusOK, accounts)
