@@ -18,19 +18,12 @@ SELECT * FROM categories
   AND
    type = $2
  AND 
-   title LIKE CONCAT('%', @title::text, '%')  
+   LOWER(title) LIKE CONCAT('%', LOWER(@title::text), '%')  
  AND 
-   description LIKE CONCAT('%', @description::text, '%');
+   LOWER(description) LIKE CONCAT('%', LOWER(@description::text), '%');
 
--- name: GetCategoriesByUserIdAndType :many
 SELECT * FROM categories WHERE user_id =$1 AND type =$2;
 
--- name: GetCategoriesByUserIdAndTypeAndTitle :many
-SELECT * FROM categories WHERE user_id =$1 AND type =$2 AND title Like $3;
-
-
--- name: GetCategoriesByUserIdAndTypeAndDescription :many
-SELECT * FROM categories WHERE user_id =$1 AND type =$2 AND description Like $3;
 
 
 -- name: UpdateCategory :one
