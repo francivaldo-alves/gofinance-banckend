@@ -84,11 +84,11 @@ func (server *Server) getAccount(ctx *gin.Context) {
 
 type getAccountsRequest struct {
 	UserID      int32     `json:"user_id" binding:"required" `
-	CategoryID  int32     `json:"category_id" binding:"required"`
-	Type        string    `json:"type" binding:"required"`
-	Title       string    `json:"title" `
+	CategoryID  int32     `json:"category_id"`
+	Type        string    `json:"type" binding: required"`
+	Title       string    `json:"title"`
 	Description string    `json:"description"`
-	Date        time.Time `json:"date" binding:"required"`
+	Date        time.Time `json:"date" `
 }
 
 // Funcação da PI para buscar uma account
@@ -97,151 +97,27 @@ func (server *Server) getAccounts(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
 	}
-	var accounts interface{}
 
-	var parameterHasUserIdType = req.UserID > 0 && len(req.Type) > 0
-
-	FilterAsByUserIdAndType := req.CategoryID == 0 && len(req.Date.GoString()) == 0 &&
-		len(req.Description) == 0 && len(req.Title) == 0 && parameterHasUserIdType
-	if FilterAsByUserIdAndType {
-
-		arg := db.GetAccountsByUserIdAndTypeParams{
-			UserID: req.UserID,
-			Type:   req.Type,
-		}
-
-		accountsByUserIdAndType, err := server.store.GetAccountsByUserIdAndType(ctx, arg)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-		accounts = accountsByUserIdAndType
+	arg := db.GetAccountsParams{
+		UserID: req.UserID,
+		Type:   req.Type,
+		CategoryID: sql.NullInt32{
+			Int32: req.CategoryID,
+			Valid: req.CategoryID > 0,
+		},
+		Title:       req.Title,
+		Description: req.Description,
+		Date: sql.NullTime{
+			Time:  req.Date,
+			Valid: !req.Date.IsZero(),
+		},
 	}
-	FilterAsByUserIdAndTypeAndCategoryId := req.CategoryID != 0 && len(req.Date.GoString()) == 0 &&
-		len(req.Description) == 0 && len(req.Title) == 0 && parameterHasUserIdType
-	if FilterAsByUserIdAndTypeAndCategoryId {
-
-		arg := db.GetAccountsByUserIdAndTypeAndCategoryIdParams{
-			UserID:     req.UserID,
-			Type:       req.Type,
-			CategoryID: req.CategoryID,
-		}
-
-		accountsByUserIdAndTypeAndCategoryId, err := server.store.GetAccountsByUserIdAndTypeAndCategoryId(ctx, arg)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-		accounts = accountsByUserIdAndTypeAndCategoryId
-	}
-	FilterAsByUserIdAndTypeAndCategoryIdAndTitle := req.CategoryID != 0 && len(req.Date.GoString()) == 0 &&
-		len(req.Description) == 0 && len(req.Title) > 0 && parameterHasUserIdType
-	if FilterAsByUserIdAndTypeAndCategoryIdAndTitle {
-
-		arg := db.GetAccountsByUserIdAndTypeAndCategoryIdAndTitleParams{
-			UserID:     req.UserID,
-			Type:       req.Type,
-			CategoryID: req.CategoryID,
-			Title:      req.Title,
-		}
-
-		accountsByUserIdAndTypeAndCategoryIdAndTitle, err := server.store.GetAccountsByUserIdAndTypeAndCategoryIdAndTitle(ctx, arg)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-		accounts = accountsByUserIdAndTypeAndCategoryIdAndTitle
-	}
-	FilterAsByUserIdAndTypeAndCategoryIdAndTitleAndDescription := req.CategoryID != 0 && len(req.Date.GoString()) == 0 &&
-		len(req.Description) > 0 && len(req.Title) > 0 && parameterHasUserIdType
-	if FilterAsByUserIdAndTypeAndCategoryIdAndTitleAndDescription {
-
-		arg := db.GetAccountsByUserIdAndTypeAndCategoryIdAndTitleAndDescriptionParams{
-			UserID:      req.UserID,
-			Type:        req.Type,
-			CategoryID:  req.CategoryID,
-			Title:       req.Title,
-			Description: req.Description,
-		}
-
-		accountsByUserIdAndTypeAndCategoryIdAndTitleAndDescription, err := server.store.GetAccountsByUserIdAndTypeAndCategoryIdAndTitleAndDescription(ctx, arg)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-		accounts = accountsByUserIdAndTypeAndCategoryIdAndTitleAndDescription
-	}
-	FilterAsByUserIdAndData := req.CategoryID == 0 && len(req.Date.GoString()) > 0 &&
-		len(req.Description) == 0 && len(req.Title) == 0 && parameterHasUserIdType
-	if FilterAsByUserIdAndData {
-
-		arg := db.GetAccountsByUserIdAndTypeIdAndDateParams{
-			UserID: req.UserID,
-			Type:   req.Type,
-			Date:   req.Date,
-		}
-
-		accountsByUserIdAndDate, err := server.store.GetAccountsByUserIdAndTypeIdAndDate(ctx, arg)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-		accounts = accountsByUserIdAndDate
-	}
-	FilterAsByUserIdAndDescription := req.CategoryID == 0 && len(req.Date.GoString()) == 0 &&
-		len(req.Description) > 0 && len(req.Title) == 0 && parameterHasUserIdType
-	if FilterAsByUserIdAndDescription {
-
-		arg := db.GetAccountsByUserIdAndTypeIdAndDescriptionParams{
-			UserID:      req.UserID,
-			Type:        req.Type,
-			Description: req.Description,
-		}
-
-		accountsByUserIdAndDescription, err := server.store.GetAccountsByUserIdAndTypeIdAndDescription(ctx, arg)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-		accounts = accountsByUserIdAndDescription
-	}
-	FilterAsByUserIdAndTitle := req.CategoryID == 0 && len(req.Date.GoString()) == 0 &&
-		len(req.Description) == 0 && len(req.Title) > 0 && parameterHasUserIdType
-	if FilterAsByUserIdAndTitle {
-
-		arg := db.GetAccountsByUserIdAndTypeIdAndTitleParams{
-			UserID: req.UserID,
-			Type:   req.Type,
-			Title:  req.Title,
-		}
-
-		accountsByUserIdAndTitle, err := server.store.GetAccountsByUserIdAndTypeIdAndTitle(ctx, arg)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-		accounts = accountsByUserIdAndTitle
-	}
-	FilterAsParameters := req.CategoryID > 0 && len(req.Date.GoString()) > 0 &&
-		len(req.Description) > 0 && len(req.Title) > 0 && parameterHasUserIdType
-	if FilterAsParameters {
-
-		arg := db.GetAccountsParams{
-			UserID:      req.UserID,
-			Type:        req.Type,
-			Title:       req.Title,
-			CategoryID:  req.CategoryID,
-			Description: req.Description,
-			Date:        req.Date,
-		}
-
-		accountsFilterAsParameters, err := server.store.GetAccounts(ctx, arg)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
-		accounts = accountsByUserIdAndTitle
+	accounts, err := server.store.GetAccounts(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	ctx.JSON(http.StatusOK, accounts)

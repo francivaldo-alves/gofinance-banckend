@@ -44,3 +44,5 @@ func (server *Server) Start(address string) error {
 func errorResponse(err error) gin.H {
 	return gin.H{"Api has error": err.Error()}
 }
+
+// teste
