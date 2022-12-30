@@ -2,10 +2,10 @@ package api
 
 import (
 	"database/sql"
-	"net/http"
-
 	db "github.com/francivaldo-alves/gofinance-bankend/db/sqlc"
+	"github.com/francivaldo-alves/gofinance-bankend/util"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type createCategoryRequest struct {
@@ -16,7 +16,10 @@ type createCategoryRequest struct {
 }
 
 func (server *Server) createCategory(ctx *gin.Context) {
-
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 	var req createCategoryRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
@@ -46,7 +49,10 @@ type getCategoryRequest struct {
 }
 
 func (server *Server) getCategory(ctx *gin.Context) {
-
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 	var req getCategoryRequest
 	err := ctx.ShouldBindUri(&req)
 	if err != nil {
@@ -75,6 +81,10 @@ type getCategoriesRequest struct {
 
 // Funcação da PI para buscar uma category
 func (server *Server) getCategories(ctx *gin.Context) {
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 	var req getCategoriesRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
@@ -105,6 +115,10 @@ type updateCategoryRequest struct {
 
 // Funcação da PI para cadastar uma categoria
 func (server *Server) updateCategory(ctx *gin.Context) {
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 	var req updateCategoryRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -128,6 +142,10 @@ type deleteCategoryByRequest struct {
 
 // Funcação da PI para deletar uma categoria
 func (server *Server) deleteCategory(ctx *gin.Context) {
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 	var req deleteCategoryByRequest
 	err := ctx.ShouldBindUri(&req)
 	if err != nil {

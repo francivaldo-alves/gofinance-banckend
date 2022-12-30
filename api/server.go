@@ -18,6 +18,7 @@ func NewServer(store *db.SQLStore) *Server {
 	router.POST("/user", server.createUser)
 	router.GET("/user/:username", server.getUser)
 	router.GET("/user/id/:id", server.getUserById)
+	router.POST("/login", server.login)
 
 	//rotas URI da API Category
 	router.POST("/category", server.createCategory)

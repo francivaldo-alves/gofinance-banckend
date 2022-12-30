@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"github.com/francivaldo-alves/gofinance-bankend/util"
 	"net/http"
 	"time"
 
@@ -21,6 +22,10 @@ type createAccountRequest struct {
 
 // Funcação da PI para cadastar um account
 func (server *Server) createAccount(ctx *gin.Context) {
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 	var req createAccountRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -62,6 +67,10 @@ type getAccountRequest struct {
 }
 
 func (server *Server) getAccount(ctx *gin.Context) {
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 
 	var req getAccountRequest
 	err := ctx.ShouldBindUri(&req)
@@ -93,6 +102,10 @@ type getAccountsRequest struct {
 
 // Funcação da PI para buscar uma account
 func (server *Server) getAccounts(ctx *gin.Context) {
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 	var req getAccountsRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
@@ -132,6 +145,10 @@ type updateAccountRequest struct {
 
 // Funcação da PI para cadastar uma categoria
 func (server *Server) updateAccount(ctx *gin.Context) {
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 	var req updateAccountRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -156,6 +173,10 @@ type deleteAccountByRequest struct {
 
 // Funcação da PI para deletar uma categoria
 func (server *Server) deleteAccount(ctx *gin.Context) {
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 	var req deleteAccountByRequest
 	err := ctx.ShouldBindUri(&req)
 	if err != nil {
@@ -179,6 +200,10 @@ type GetAccountsGraphParams struct {
 }
 
 func (server *Server) getAccountGraph(ctx *gin.Context) {
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 
 	var req GetAccountsGraphParams
 	err := ctx.ShouldBindUri(&req)
@@ -207,7 +232,10 @@ type GetAccountsReportsParams struct {
 }
 
 func (server *Server) getAccountRports(ctx *gin.Context) {
-
+	erroOnValidetToken := util.GetTokenInHeaderAndVerify(ctx)
+	if erroOnValidetToken != nil {
+		return
+	}
 	var req GetAccountsReportsParams
 	err := ctx.ShouldBindUri(&req)
 	if err != nil {
